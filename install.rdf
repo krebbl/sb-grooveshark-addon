@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#"
+     xmlns:songbird="http://www.songbirdnest.com/2007/addon-metadata-rdf#">
+  <Description about="urn:mozilla:install-manifest">
+    <em:id>{17ac3fa0-70a8-a640-b667-4062b5939293}</em:id>
+    <em:type>2</em:type>
+    <em:name>Grooveshark</em:name>
+    <em:version>1.0.0.0</em:version>
+    <em:creator>MK</em:creator>
+
+
+    <em:description>Grooveshark Add-On</em:description>
+
+
+
+
+
+    <em:optionsURL>chrome://grooveshark-addon/content/options.xul</em:optionsURL>
+
+
+
+    <em:targetApplication>
+      <Description>
+        <em:id>songbird@songbirdnest.com</em:id>
+        <em:minVersion>1.8.0a</em:minVersion>
+        <em:maxVersion>1.10.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+
+
+
+
+
+    <!-- Register a pane to be displayed below the service sidebar.
+         See http://wiki.songbirdnest.com/Developer/Articles/Getting_Started/Display_Panes -->
+    <songbird:displayPane>
+      <Description>
+        <songbird:contentTitle>Grooveshark</songbird:contentTitle>
+        <songbird:contentUrl>chrome://grooveshark-addon/content/pane.xul</songbird:contentUrl>
+        <songbird:contentIcon>chrome://grooveshark-addon/skin/pane-icon.png</songbird:contentIcon>
+        <songbird:defaultWidth>200</songbird:defaultWidth>
+        <songbird:defaultHeight>100</songbird:defaultHeight>
+        <songbird:suggestedContentGroups>servicepane</songbird:suggestedContentGroups>
+        <songbird:showOnInstall>true</songbird:showOnInstall>
+      </Description>
+    </songbird:displayPane>
+
+
+
+    <!-- Register a custom media page.
+         See http://wiki.songbirdnest.com/Developer/Articles/Getting_Started/Building_Media_Views -->
+    <songbird:mediaPage>
+      <Description>
+        <songbird:contentTitle>Grooveshark</songbird:contentTitle>
+        <songbird:contentUrl>chrome://grooveshark-addon/content/media-page.xul</songbird:contentUrl>
+      </Description>
+    </songbird:mediaPage>
+
+  </Description>
+</RDF>

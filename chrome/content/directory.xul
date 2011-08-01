@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://songbird/content/bindings/bindings.css"
+  type="text/css"?>
+<?xml-stylesheet href="chrome://songbird/skin/songbird.css" type="text/css"?>
+<?xml-stylesheet href="chrome://shoutcast-radio/skin/overlay.css"
+    type="text/css"?>
+
+<!DOCTYPE page SYSTEM "chrome://shoutcast-radio/locale/overlay.dtd">
+
+<?xul-overlay href="chrome://songbird/content/xul/mediaPageOverlay.xul"?>
+
+<page id="shoutcast-window"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  onload="setTimeout(function() { GroovesharkDirectory.init();
+    }, 100);"
+  onunload="GroovesharkDirectory.unload()">
+
+  <stringbundleset id="stringbundleset"> 
+    <stringbundle id="shoutcast-radio-strings"
+      src="chrome://shoutcast-radio/locale/overlay.properties"/>
+  </stringbundleset>  
+
+    <script type="application/x-javascript" 
+    src="chrome://songbird/content/scripts/songbirdInterfaces.js"/>
+    <script type="application/x-javascript" 
+    src="chrome://songbird/content/scripts/windowUtils.js"/>
+    <script type="application/x-javascript" 
+    src="chrome://songbird/content/scripts/browserUtilities.js"/>
+  
+  <script type="application/javascript" src="groovesharkProperties.js"/>
+  <script type="application/javascript" src="directory.js"/>
+  <script type="application/javascript" src="grooveshark.js"/>
+  
+  <hbox align="center" id="shoutcast-box">
+    <vbox flex="1" id="search-box" class="generic-bar">
+      <hbox>
+        <label class="text-link"
+  onclick="Components.classes['@mozilla.org/appshell/window-mediator;1']
+  .getService(Components.interfaces.nsIWindowMediator)
+  .getMostRecentWindow('Songbird:Main').gBrowser
+  .loadOneTab('http://shoutcast.com');"><image
+  src="chrome://shoutcast-radio/skin/shoutcast_wordmark.png" /></label>
+      </hbox>
+      <textbox id="grooveshark-search-box" flex="1" searchbutton="true" />
+    </vbox>
+  </hbox>
+
+  <deck id="loading-deck" flex="2" selectedIndex="0">
+    <sb-playlist flex="1"
+      id="grooveshark-directory"
+      enableColumnDrag="true"
+      persist="column-list column-widths"
+      hidecolumnpicker="true"
+      editable="false"/>
+  </deck>
+</page>

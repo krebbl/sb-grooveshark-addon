@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://grooveshark-addon/skin/overlay.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://grooveshark-addon/locale/overlay.dtd">
+<overlay id="grooveshark-addon-menu-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  
+  <!-- Target the tools menu -->
+  <menupopup id="menu_ToolsPopup"> 
+
+    <!-- Add a menu item -->
+    <menuitem id="grooveshark-addon-helloworld-menuitem"
+            label="&grooveshark-addon.helloworld.label;" 
+            accesskey="&grooveshark-addon.helloworld.accesskey;" 
+            insertafter="devToolsSeparator"
+            command="grooveshark-addon-helloworld-cmd" />   
+     
+  </menupopup>
+
+</overlay>

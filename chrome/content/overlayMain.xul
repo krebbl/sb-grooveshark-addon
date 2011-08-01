@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!DOCTYPE window SYSTEM "chrome://songbird/locale/songbird.dtd" >
+
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        id="songbird_main_overlay"
+        xmlns:html="http://www.w3.org/1999/xhtml"
+        xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:xbl="http://www.mozilla.org/xbl">
+
+<!--
+        This file is enabled by the chrome.manifest line:
+        overlay windowtype:Songbird:Main chrome://songbird-pauseplaystop/content/overlayMain.xul
+        And will be applied to __ALL__ properly implemented windows of windowtype="Songbird:Main"
+-->
+
+<!-- Import your JavaScript code. 
+<script type="application/x-javascript"
+        src="chrome://grooveshark-addon/content/overlayMain.js"/>-->
+
+<!--
+        This overlay will land __INSIDE__ of the <sb-player-control-buttons/> element,
+        no matter what .xul layout is used to show the control buttons element.
+-->
+
+<xul:hbox id="sb-player-control-buttons">
+        <xul:sb-player-pause-button
+                id="sb-player-control-buttons-pause"
+                insertbefore="sb-player-control-buttons-playpause"
+                popupanchor="topleft" popupalign="bottomleft"/>
+
+        <xul:sb-player-play-button
+                id="sb-player-control-buttons-play"
+                insertbefore="sb-player-control-buttons-playpause"
+                popupanchor="topleft" popupalign="bottomleft"/>
+
+        <xul:sb-player-stop-button
+                id="sb-player-control-buttons-stop"
+                insertbefore="sb-player-control-buttons-playpause"
+                popupanchor="topleft" popupalign="bottomleft"/>
+
+        <xul:sb-player-playpause-button
+                id="sb-player-control-buttons-playpause" popupanchor="topleft"
+                popupalign="bottomleft" hidden="true"/>
+</xul:hbox>
+
+<xul:hbox id="sb-mini-player-controls">
+        <xul:sb-player-pause-button
+                id="mini_btn_pause" class="miniplayer"
+                insertbefore="sb-mini-player-controls-playpause" popupanchor="topleft"
+                popupalign="bottomleft"/>
+
+        <xul:sb-player-play-button
+                id="mini_btn_play" class="miniplayer"
+                insertbefore="sb-mini-player-controls-playpause" popupanchor="topleft"
+                popupalign="bottomleft"/>
+
+        <xul:sb-player-stop-button
+                id="mini_btn_stop" class="miniplayer"
+                insertbefore="sb-mini-player-controls-playpause" popupanchor="topleft"
+                popupalign="bottomleft"/>
+
+        <xul:sb-player-playpause-button
+                id="sb-mini-player-controls-playpause" popupanchor="topleft"
+                popupalign="bottomleft" hidden="true"/>
+</xul:hbox>
+
+<!--
+        More overlays inside of XBL elements.
+        Here we're sticking extra strings in the metadata labels.
+-->
+<xul:hbox id="sb-player-artist-label">
+        <xul:label value="&metadata.artist; - "
+                insertbefore="sb-player-artist-label-label"
+                class="faceplate-text"/>
+</xul:hbox>
+
+<xul:hbox id="sb-player-album-label">
+        <xul:label value="&metadata.album; - "
+                insertbefore="sb-player-album-label-label"
+                class="faceplate-text"/>
+
+</xul:hbox>
+
+<xul:hbox id="sb-player-title-label">
+        <xul:label value="&metadata.title; - "
+                insertbefore="sb-player-title-label-label"
+                class="faceplate-text"/>
+</xul:hbox>
+
+<xul:hbox id="sb-player-numplaylistitems-label">
+        <xul:label xvalue="Items? "
+                insertbefore="sb-player-numplaylistitems-label-label"/>
+
+</xul:hbox>
+
+</overlay>
