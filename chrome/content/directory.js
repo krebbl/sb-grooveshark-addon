@@ -26,10 +26,14 @@ if( typeof (gMetrics) == "undefined")
 const groovesharkTempLibGuid = "extensions.grooveshark-addon.templib.guid";
 const groovesharkLibraryGuid = "extensions.grooveshark-addon.library.guid";
 const groovesharkPlaylistInit = "extensions.grooveshark-addon.plsinit";
+const groovesharkDirectoryInit = "extensions.grooveshark-addon.directoryinit";
+const groovesharkPlaylistLibGuid = "extensions.grooveshark-addon.playlistlib.guid";
 
 var GroovesharkDirectory = {
-	playlist : null,
+	directoryList : null,
+	playlist: null,
 	library : null,
+	playlistLibrary: null,
 	tempLib : null,
 	tempView : null,
 	searchBox : null,
@@ -37,6 +41,7 @@ var GroovesharkDirectory = {
 	downloadQueue : [],
 	isDownloading : false,
 	isInitialized : false,
+	commands : null,
 	init : function() {
 		GroovesharkAPI.startSession();
 
@@ -48,10 +53,11 @@ var GroovesharkDirectory = {
 		this.getLibraries();
 
 		// create playlist commands
-		var commands = Cc["@songbirdnest.com/Songbird/PlaylistCommandsBuilder;1"].createInstance(Ci.sbIPlaylistCommandsBuilder);
+		this.commands = Cc["@songbirdnest.com/Songbird/PlaylistCommandsBuilder;1"].createInstance(Ci.sbIPlaylistCommandsBuilder);
 
 		// var commands = new PlaylistCommandsBuilder();
-		commands.appendAction(null, "commands_myAction", "Download", "Do something cool", function(aContext) {
+		// commands.removeAllCommands();
+		this.commands.appendAction(null, "download", "Download", "Do something cool", function(aContext) {
 			var enumerator = aContext.playlist.mediaListView.selection.selectedMediaItems;
 			var gs = GroovesharkDirectory;
 			while(enumerator.hasMoreElements()) {
@@ -61,25 +67,31 @@ var GroovesharkDirectory = {
 			}
 
 		});
+		this.commands.appendAction(null, "enqueueToPlaylist", "Enqueue", "Do somthing very cool", function(aContext){
+			var enumerator = aContext.playlist.mediaListView.selection.selectedMediaItems;
+			var gs = GroovesharkDirectory;
+			while(enumerator.hasMoreElements()) {
+				// alert(enumerator.getNext())
+				var item = enumerator.getNext();
+				gs.playlist.mediaList.add(item);
+			}
+		});
+		
 		var commandsManager = Cc["@songbirdnest.com/Songbird/PlaylistCommandsManager;1"].getService(Ci.sbIPlaylistCommandsManager);
-		commandsManager.registerPlaylistCommandsMediaItem(this.library.guid, "", commands);
-
+		
+		commandsManager.registerPlaylistCommandsMediaItem(this.library.guid, "", this.commands);
+		
 		// Bind the playlist widget to our library
-		this.playlist = document.getElementById("grooveshark-directory");
+		this.directoryList = document.getElementById("grooveshark-directory");
 		var libraryManager = Cc['@songbirdnest.com/Songbird/library/Manager;1'].getService(Ci.sbILibraryManager);
 
-		var deviceManager = Cc["@songbirdnest.com/Songbird/DeviceManager;1"].getService(Ci.sbIDeviceManager);
-		var downloadDevice = deviceManager.getDeviceByIndex(0);
-		// alert(JSON.stringify(downloadDevice))
-		// alert(deviceManager.getCategoryByIndex(0));
-		// var cmds = commandsManager.request(kPlaylistCommands.MEDIAITEM_DEFAULT);
-		// libraryManager.registerPlaylistCommandsMediaItem(LibraryUtils.mainLibrary, "", myCommands);
-
-		this.playlist.bind(this.library.createView());
+		this.directoryList.bind(this.library.createView());
 		this.tempView = this.library.createView();
-
+		
+		this.playlist = this.playlistLibrary.createView();
+		
 		// Enumerate all columns in the playlist
-		var playlistcolumns = this.playlist.tree.columns;
+		var playlistcolumns = this.directoryList.tree.columns;
 		var columnbinds = [];
 		for(var i = 0; i < playlistcolumns.length; i++) {
 			// Get the bind url for each column
@@ -89,7 +101,7 @@ var GroovesharkDirectory = {
 		// no Name column, clear the normal columns and use the stream ones
 		// alert(Application.prefs.getValue(groovesharkPlaylistInit,false))
 
-		this.playlist.addEventListener("Play", onPlay, false);
+		// this.directoryList.addEventListener("Play", onPlay, false);
 
 		var gMM = Cc["@songbirdnest.com/Songbird/Mediacore/Manager;1"].getService(Ci.sbIMediacoreManager);
 		// alert(Cc["@songbirdnest.com/Songbird/FileDownloader;1"]);
@@ -134,22 +146,17 @@ var GroovesharkDirectory = {
 			}
 		}
 		gMM.addListener(mediaCoreListener);
-
-		if(Application.prefs.get(groovesharkPlaylistInit).value) {
-			Application.prefs.setValue(groovesharkPlaylistInit, false);
-
-			this.loadTable(GroovesharkAPI.getPopular());
-		}
-
 	},
 	unload : function() {
-		GroovesharkDirectory.playlist.removeEventListener("PlaylistCellClick", onPlaylistCellClick, false);
-		GroovesharkDirectory.playlist.removeEventListener("Play", onPlay, false);
+		var commandsManager = Cc["@songbirdnest.com/Songbird/PlaylistCommandsManager;1"].getService(Ci.sbIPlaylistCommandsManager);
+		commandsManager.unregisterPlaylistCommandsMediaItem(this.library.guid, "", this.commands);
+		
 	},
 	getLibraries : function() {
 		var libraryManager = Cc["@songbirdnest.com/Songbird/library/Manager;1"]
 		.getService(Ci.sbILibraryManager);
-
+		
+		// search library
 		var libGuid = Application.prefs.getValue(groovesharkLibraryGuid, "");
 		if(libGuid != "") {
 			try {
@@ -169,8 +176,30 @@ var GroovesharkDirectory = {
 			libraryManager.registerLibrary(this.library, true);
 			Application.prefs.setValue(groovesharkLibraryGuid, this.library.guid);
 		}
+		
+		// playlist library
+		var libGuid = Application.prefs.getValue(groovesharkPlaylistLibGuid, "");
+		if(libGuid != "") {
+			try {
+				this.playlistLibrary = libraryManager.getLibrary(libGuid);
+			} catch(e) {
+				// If we have an invalid GUID, we act like we have no GUID
+				libGuid = "";
+			}
+		}
+		if(libGuid == "") {
+			this.playlistLibrary = createLibrary(groovesharkPlaylistLibGuid, null, false);
+			// doesn't manifest itself in any user visible way, so i think
+			// it's safe to not localise
+			this.playlistLibrary.name = "Grooveshark Playlist";
+			this.playlistLibrary.setProperty(SBProperties.hidden, "1");
+			dump("*** Created Grooveshark library, GUID: " + this.playlistLibrary.guid);
+			libraryManager.registerLibrary(this.playlistLibrary, true);
+			Application.prefs.setValue(groovesharkPlaylistLibGuid, this.playlistLibrary.guid);
+		}
 	},
 	search : function(query) {
+		// alert("search :" + query)
 		var songs = [];
 		songs = songs.concat(GroovesharkAPI.getSearchResults(query));
 		// songs.concat(GroovesharkAPI.getSearchResults(query,'Artists'));
@@ -187,17 +216,14 @@ var GroovesharkDirectory = {
 
 			var song = songs[i];
 			var id = song.SongID;
-			var name = song.Name;
-			var artistName = song.ArtistName;
-			var albumName = song.AlbumName;
 
 			var props = Cc[
 			"@songbirdnest.com/Songbird/Properties/MutablePropertyArray;1"]
 			.createInstance(Ci.sbIMutablePropertyArray);
 
-			props.appendProperty(SBProperties.trackName, name);
-			props.appendProperty(SBProperties.artistName, artistName);
-			props.appendProperty(SBProperties.albumName, albumName);
+			props.appendProperty(SBProperties.trackName, song.SongName);
+			props.appendProperty(SBProperties.artistName, song.ArtistName);
+			props.appendProperty(SBProperties.albumName, song.AlbumName);
 			props.appendProperty(GS_id, parseInt(id));
 			props.appendProperty(GS_url_loaded, "NO");
 
@@ -254,10 +280,12 @@ var GroovesharkDirectory = {
 		var artist = item.getProperty(SBProperties.artistName);
 		var track = item.getProperty(SBProperties.trackName);
 
-		alert("Download Complete: " + artist + " - " + track);
-
+		// alert("Download Complete: " + artist + " - " + track);
+		if(this.downloadQueue.length == 0){
+			alert("All Downloads completed");
+		}
+		
 		this.isDownloading = false;
-
 		this.downloadItems();
 	}
 }
@@ -330,6 +358,6 @@ var libListener = {
 		var el = songbirdMainWindow.document
 		.getElementById("sb-status-bar-status-progressmeter");
 		el.mode = "";
-		SBDataSetStringValue("faceplate.status.text", array.length + " " + "Hello World");
+		SBDataSetStringValue("faceplate.status.text", array.length + " Items");
 	}
 }

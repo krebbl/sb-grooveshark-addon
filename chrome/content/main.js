@@ -71,7 +71,7 @@ GroovesharkAddon.Controller = {
     //radioFolder.editable = false;
     //radioFolder.hidden = false;
   
-    // Add SHOUTcast chrome to service pane
+   // Add Grooveshark chrome to service pane
     var node = SPS.createNode();
     node.url = "chrome://grooveshark-addon/content/directory.xul";
     node.id = "SB:Grooveshark";
@@ -80,15 +80,15 @@ GroovesharkAddon.Controller = {
     groovesharkFolder.appendChild(node);
     node.editable = false;
     node.hidden = false;
-/*
+
 	node = SPS.createNode();
-	node.url = "chrome://grooveshark-addon/content/directory.xul";
-    node.id = "SB:Grooveshark:Popular";
-    node.name = "Popular";
+	node.url = "chrome://grooveshark-addon/content/playlist.xul";
+    node.id = "SB:Grooveshark:Playlist";
+    node.name = "Current Playlist";
     // node.image = FAVICON_PATH;
     groovesharkFolder.appendChild(node);
     node.editable = false;
-    node.hidden = false;*/
+    node.hidden = false;
  
     // Add the toolbar button to the default item set of the browser toolbar.
     // TODO: Should only do this on first run, but Bug 6778 requires doing it
@@ -102,10 +102,11 @@ GroovesharkAddon.Controller = {
     var controller = this;
     
     // Attach doHelloWorld to our helloworld command
+    /*
     this._helloWorldCmd = document.getElementById("grooveshark-addon-helloworld-cmd");
     this._helloWorldCmd.addEventListener("command", 
          function() { controller.doHelloWorld(); }, false);
-
+	*/
   },
   
 

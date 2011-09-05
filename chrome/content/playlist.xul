@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://songbird/content/bindings/bindings.css"
+  type="text/css"?>
+<?xml-stylesheet href="chrome://songbird/skin/songbird.css" type="text/css"?>
+<?xml-stylesheet href="chrome://shoutcast-radio/skin/overlay.css"
+    type="text/css"?>
+
+<!DOCTYPE page SYSTEM "chrome://shoutcast-radio/locale/overlay.dtd">
+
+<?xul-overlay href="chrome://songbird/content/xul/mediaPageOverlay.xul"?>
+
+<page id="grooveshark-playlist"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	onload="setTimeout(function() { GroovesharkPlaylist.init();
+    }, 200);"
+	onunload="GroovesharkPlaylist.unload()">
+
+	<stringbundleset id="stringbundleset">
+		<stringbundle id="shoutcast-radio-strings"
+			src="chrome://shoutcast-radio/locale/overlay.properties" />
+	</stringbundleset>
+
+	<script type="application/x-javascript"
+		src="chrome://songbird/content/scripts/songbirdInterfaces.js" />
+	<script type="application/x-javascript" src="chrome://songbird/content/scripts/windowUtils.js" />
+	<script type="application/x-javascript"
+		src="chrome://songbird/content/scripts/browserUtilities.js" />
+
+	<script type="application/javascript" src="groovesharkProperties.js" />
+	<script type="application/javascript" src="playlist.js" />
+	<script type="application/javascript" src="grooveshark.js" />
+
+	<deck id="grooveshark-playlist-deck" flex="2" selectedIndex="0">
+		<sb-playlist id="playlist" type="smart" class="sb-playlist-tree"
+			enableColumnDrag="true" mousethrough="never" hidefilters="true" flex="1" />
+	</deck>
+</page>
